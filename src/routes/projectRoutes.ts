@@ -3,7 +3,8 @@ import { ProjectController } from "../controllers/ProjectController";
 import { body, param } from "express-validator";
 import { handleInputErrors } from "../middleware/validation";
 import { TaskController } from "../controllers/TaskController";
-import { validateProjectExists } from "../middleware/projects";
+import { projectExists } from "../middleware/projects";
+import { taskBelongToProject, tasksExists } from "../middleware/task";
 
 const router = Router()
 
@@ -44,7 +45,7 @@ router.delete('/:id',
 )
 
 /** Routes for tasks **/
-router.param('projectId', validateProjectExists)
+router.param('projectId', projectExists)
 
 router.post('/:projectId/tasks',
     body('name')
@@ -58,6 +59,10 @@ router.post('/:projectId/tasks',
 router.get('/:projectId/tasks',
     TaskController.getProjectTasks
 )
+
+router.param('taskId', tasksExists )
+router.param('taskId', taskBelongToProject )
+
 
 router.get('/:projectId/tasks/:taskId',
     param('taskId').isMongoId().withMessage('ID no válido'),
@@ -80,5 +85,14 @@ router.delete('/:projectId/tasks/:taskId',
     handleInputErrors,
     TaskController.deleteTask
 )
+
+router.post('/:projectId/tasks/:taskId/status',
+    param('taskId').isMongoId().withMessage('ID no válido'),
+    body('status')
+        .notEmpty().withMessage('El estado de la tarea es obligatorio'),
+    handleInputErrors,
+    TaskController.updateStatusTask
+)
+
 
 export default router
