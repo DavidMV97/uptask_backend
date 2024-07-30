@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import User from '../models/User';
 import Token from '../models/Token';
 import { checkPassword, hashPassword } from '../utils/auth';
@@ -10,8 +10,6 @@ export class AuthController {
         try {
             const { password, email } = req.body
             // Prevenir duplicados
-            console.log(password, email);
-
             const userExists = await User.findOne({ email })
             if (userExists) {
                 const error = new Error('El email ingresado ya se encuentra registrado')
@@ -20,7 +18,7 @@ export class AuthController {
 
             // Crea un usuario
             const user = new User(req.body)
-
+        
             // Hash Password
             user.password = await hashPassword(password)
 

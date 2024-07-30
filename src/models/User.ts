@@ -15,22 +15,16 @@ const userSchema: Schema = new Schema({
         unique: true
     },
     password: {
-        type: {
-            type: String,
-            required: true
-        }
+        type: String,
+        required: true
     },
     name: {
-        type: {
-            type: String,
-            required: true
-        }
+        type: String,
+        required: true
     },
     confirmed: {
-        type: {
-            type: Boolean,
-            default: false
-        }
+        type: Boolean,
+        default: false
     }
 })
 
