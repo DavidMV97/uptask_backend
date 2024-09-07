@@ -33,3 +33,12 @@ export function taskBelongToProject(req: Request, res: Response, next: NextFunct
 }
 
 
+export function hasAutorization(req: Request, res: Response, next: NextFunction){
+    if ( req.user.id.toString() !== req.project.manager.toString() ) {
+        const error = new Error('Acción no válida')
+        return res.status(400).json({ error: error.message })
+    }
+    next()
+}
+
+
