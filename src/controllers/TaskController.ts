@@ -26,7 +26,8 @@ export class TaskController {
     }
     static getTaskById = async (req: Request, res: Response) => {
         try {
-            res.json(req.task)
+            const task = await Task.findById(req.task.id).populate({path: 'completedBy.user', select: 'id name email'})
+            res.json(task)
         } catch (error) {
             return res.status(500).json({ error: 'Hubo un error' })
         }
@@ -55,22 +56,15 @@ export class TaskController {
 
     static updateStatusTask = async (req: Request, res: Response) => {
         try {
-            const { taskId } = req.params
-            const task = await Task.findById(taskId)
-            if (!task) {
-                const error = new Error('Tarea no encontrada')
-                return res.status(404).json({ error: error.message })
-            }
             const {  status } = req.body
             req.task.status = status
-            
-            if (status === 'pending') {
-                req.task.completedBy = null
-            } else {
-                req.task.completedBy = req.user.id
+            const data = {
+                user: req.user.id,
+                status
             }
+            req.task.completedBy.push(data)
             await req.task.save()
-            res.send('El estado de la tarea ha sido actualizado correctamente')
+            res.send('Tarea actualizada correctamente')
         } catch (error) {
             return res.status(500).json({ error: 'Hubo un error' })
         }
