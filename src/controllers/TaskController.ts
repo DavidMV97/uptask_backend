@@ -62,8 +62,14 @@ export class TaskController {
                 return res.status(404).json({ error: error.message })
             }
             const {  status } = req.body
-            task.status = status
-            await task.save()
+            req.task.status = status
+            
+            if (status === 'pending') {
+                req.task.completedBy = null
+            } else {
+                req.task.completedBy = req.user.id
+            }
+            await req.task.save()
             res.send('El estado de la tarea ha sido actualizado correctamente')
         } catch (error) {
             return res.status(500).json({ error: 'Hubo un error' })
