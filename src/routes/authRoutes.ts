@@ -10,8 +10,8 @@ router.post('/create-account',
     body('name')
         .notEmpty().withMessage('El nombre no puede ir vacío'),
     body('password')
-        .isLength({min: 8}).withMessage('El password debe tener ocho caracteres como mínimo'),
-    body('password_confirmation').custom((value, {req}) => {
+        .isLength({ min: 8 }).withMessage('El password debe tener ocho caracteres como mínimo'),
+    body('password_confirmation').custom((value, { req }) => {
         if (value !== req.body.password) {
             throw new Error('Las contraseñas no coinciden')
         }
@@ -64,8 +64,8 @@ router.post('/update-password/:token',
     param('token').
         isNumeric().withMessage('Token no válido'),
     body('password')
-        .isLength({min: 8}).withMessage('El password debe tener ocho caracteres como mínimo'),
-    body('password_confirmation').custom((value, {req}) => {
+        .isLength({ min: 8 }).withMessage('El password debe tener ocho caracteres como mínimo'),
+    body('password_confirmation').custom((value, { req }) => {
         if (value !== req.body.password) {
             throw new Error('Las contraseñas no coinciden')
         }
@@ -78,6 +78,33 @@ router.post('/update-password/:token',
 router.get('/user',
     authenticate,
     AuthController.user
+)
+
+/** Profile */
+router.put('/profile',
+    authenticate,
+    body('name')
+        .notEmpty().withMessage('El nombre no puede ir vacío'),
+    body('email')
+        .isEmail().withMessage('E-mail no válido'),
+    handleInputErrors,
+    AuthController.updateProfile
+)
+
+router.post('/update-password',
+    authenticate,
+    body('current_password')
+        .notEmpty().withMessage('Este campo no puede ir vacío'),
+    body('password')
+        .isLength({ min: 8 }).withMessage('El password debe tener ocho caracteres como mínimo'),
+    body('password_confirmation').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Las contraseñas no coinciden')
+        }
+        return true
+    }),
+    handleInputErrors,
+    AuthController.updateCurrentUserPassword
 )
 
 
